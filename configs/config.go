@@ -5,6 +5,7 @@ import (
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 	"fmt"
 	"os"
+	"github.com/sert-uw/fin_mane_be/models"
 )
 
 var (
@@ -18,6 +19,10 @@ func Init() error {
 	var err error
 
 	if DB, err = gorm.Open("mysql", dbConf); err != nil {
+		return err
+	}
+
+	if err := DB.AutoMigrate(&models.User{}, &models.Asset{}, &models.Category{}, &models.History{}).Error; err != nil {
 		return err
 	}
 
