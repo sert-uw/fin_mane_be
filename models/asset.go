@@ -1,11 +1,9 @@
 package models
 
-import "github.com/jinzhu/gorm"
-
 type Asset struct {
-	gorm.Model
-	Name      string `gorm:"not null"`
-	Balance   int    `gorm:"not null; default:0"`
-	UserID    uint   `gorm:"not null"`
-	Histories []History
+	Base
+	Name      string    `json:"name" gorm:"not null"`
+	Balance   int       `json:"balance" gorm:"not null; default:0"`
+	UserID    uint      `json:"user_id" gorm:"not null"`
+	Histories []History `json:"histories"`
 }

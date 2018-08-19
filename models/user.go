@@ -1,10 +1,8 @@
 package models
 
-import "github.com/jinzhu/gorm"
-
 type User struct {
-	gorm.Model
-	Token  string `gorm:"not null;unique"`
-	Name   string `gorm:"not null"`
-	Assets []Asset
+	Base
+	Token  string  `json:"token" gorm:"not null;unique"`
+	Name   string  `json:"name" gorm:"not null"`
+	Assets []Asset `json:"assets"`
 }

@@ -1,11 +1,9 @@
 package models
 
-import "github.com/jinzhu/gorm"
-
 type History struct {
-	gorm.Model
-	Name       string `gorm:"not null"`
-	Amount     int    `gorm:"not null"`
-	CategoryID uint   `gorm:"not null"`
-	AssetID    uint   `gorm:"not null"`
+	Base
+	Name       string `json:"name" gorm:"not null"`
+	Amount     int    `json:"amount" gorm:"not null"`
+	CategoryID uint   `json:"category_id" gorm:"not null"`
+	AssetID    uint   `json:"asset_id" gorm:"not null"`
 }

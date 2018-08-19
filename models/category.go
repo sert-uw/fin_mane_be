@@ -1,9 +1,7 @@
 package models
 
-import "github.com/jinzhu/gorm"
-
 type Category struct {
-	gorm.Model
-	Name string `gorm:"not null"`
-	Type int    `gorm:"not null"`
+	Base
+	Name string `json:"name" gorm:"not null"`
+	Type int    `json:"type" gorm:"not null"`
 }
