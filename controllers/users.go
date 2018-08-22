@@ -13,7 +13,7 @@ func GetUser(c echo.Context) error {
 	authHeader := c.Request().Header.Get("Authorization")
 	token, err := firebase.GetUserToken(authHeader)
 	if err != nil {
-		return c.JSON(http.StatusUnauthorized, map[string]string{"message": "Unauthorized"})
+		return c.JSON(http.StatusUnauthorized, map[string]string{"message": "Unauthorized."})
 	}
 
 	var user models.User
@@ -27,6 +27,34 @@ func GetUser(c echo.Context) error {
 		if err := configs.DB.Preload("Assets").Create(&user).Error; err != nil {
 			return c.JSON(http.StatusInternalServerError, map[string]string{"message": "Cannot insert user."})
 		}
+	}
+
+	return c.JSON(http.StatusOK, user)
+}
+
+// ユーザー情報更新
+func PutUser(c echo.Context) error {
+	authHeader := c.Request().Header.Get("Authorization")
+	token, err := firebase.GetUserToken(authHeader)
+	if err != nil {
+		return c.JSON(http.StatusUnauthorized, map[string]string{"message": "Unauthorized."})
+	}
+
+	var user models.User
+	if configs.DB.Preload("Assets").Where("token = ?", token.UID).First(&user).RecordNotFound() {
+		return c.JSON(http.StatusNotFound, map[string]string{"message": "User not found."})
+	}
+
+	request := &struct {
+		Name string `json:"name"`
+	}{}
+	if err := c.Bind(&request); err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]string{"message": "Bad request."})
+	}
+
+	user.Name = request.Name
+	if err := configs.DB.Save(&user).Error; err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]string{"message": "Cannot update user."})
 	}
 
 	return c.JSON(http.StatusOK, user)
