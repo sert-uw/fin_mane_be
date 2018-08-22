@@ -39,5 +39,9 @@ func main() {
 	e.GET("/user", controllers.GetUser)
 	e.PUT("/user", controllers.PutUser)
 
+	e.GET("/assets", controllers.GetAssets)
+	e.POST("/assets", controllers.PostAsset)
+	e.PUT("/assets/:id", controllers.PutAsset)
+
 	e.Logger.Fatal(e.Start(":" + os.Getenv("PORT")))
 }
