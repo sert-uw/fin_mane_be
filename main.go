@@ -36,5 +36,7 @@ func main() {
 	e.PUT("/categories/:id", controllers.PutCategory)
 	e.DELETE("/categories/:id", controllers.DeleteCategory)
 
+	e.GET("/user", controllers.GetUser)
+
 	e.Logger.Fatal(e.Start(":" + os.Getenv("PORT")))
 }

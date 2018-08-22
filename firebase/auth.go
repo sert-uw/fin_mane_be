@@ -47,3 +47,12 @@ func GetUserToken(authHeader string) (*auth.Token, error) {
 	idToken := strings.Replace(authHeader, "Bearer ", "", 1)
 	return authClient.VerifyIDToken(context.Background(), idToken)
 }
+
+func GetUserName(uid string) (string, error) {
+	record, err := authClient.GetUser(context.Background(), uid)
+	if err != nil {
+		return "", err
+	}
+
+	return record.DisplayName, nil
+}
