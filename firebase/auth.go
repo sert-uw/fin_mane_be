@@ -35,15 +35,15 @@ func Init() error {
 func JWTHandler(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		authHeader := c.Request().Header.Get("Authorization")
-		if _, err := GetUserInfo(authHeader); err != nil {
+		if _, err := GetUserToken(authHeader); err != nil {
 			return c.JSON(http.StatusUnauthorized, map[string]string{"message": "error verifying ID token"})
 		}
 		return next(c)
 	}
 }
 
-// Authorizationヘッダーからユーザー情報を取得する
-func GetUserInfo(authHeader string) (*auth.Token, error) {
+// AuthorizationヘッダーからユーザーのToken情報を取得する
+func GetUserToken(authHeader string) (*auth.Token, error) {
 	idToken := strings.Replace(authHeader, "Bearer ", "", 1)
 	return authClient.VerifyIDToken(context.Background(), idToken)
 }
