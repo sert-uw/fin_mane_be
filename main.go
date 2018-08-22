@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"os"
 	"github.com/sert-uw/fin_mane_be/controllers"
+	"github.com/sert-uw/fin_mane_be/firebase"
 )
 
 func main() {
@@ -16,8 +17,15 @@ func main() {
 		return
 	}
 
+	// Firebaseのセットアップ
+	if err := firebase.Init(); err != nil {
+		fmt.Println(err)
+		return
+	}
+
 	// Echo設定
 	e := echo.New()
+	e.Use(firebase.JWTHandler)
 
 	e.GET("/", func(c echo.Context) error {
 		return c.JSON(http.StatusOK, map[string]string{"message": "OK"})
