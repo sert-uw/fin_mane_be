@@ -16,12 +16,17 @@ func GetAssets(c echo.Context) error {
 		return c.JSON(http.StatusUnauthorized, map[string]string{"message": "Unauthorized."})
 	}
 
-	var user models.User
-	if configs.DB.Preload("Assets").Where("token = ?", token.UID).First(&user).RecordNotFound() {
-		return c.JSON(http.StatusNotFound, map[string]string{"message": "User not found."})
+	var assets []models.Asset
+	err = configs.DB.Where("user_id = ?",
+		configs.DB.Table("users").Select("id").Where("token = ?", token.UID).SubQuery()).
+		Find(&assets).
+		Error
+
+	if err != nil {
+		return c.JSON(http.StatusNotFound, map[string]string{"message": "Assets not found."})
 	}
 
-	return c.JSON(http.StatusOK, user.Assets)
+	return c.JSON(http.StatusOK, assets)
 }
 
 // Asset登録
@@ -51,7 +56,7 @@ func PostAsset(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"message": "Cannot insert asset."})
 	}
 
-	return c.JSON(http.StatusOK, user.Assets)
+	return c.JSON(http.StatusOK, asset)
 }
 
 // Assert更新
@@ -62,14 +67,14 @@ func PutAsset(c echo.Context) error {
 		return c.JSON(http.StatusUnauthorized, map[string]string{"message": "Unauthorized."})
 	}
 
-	var user models.User
-	if configs.DB.Preload("Assets").Where("token = ?", token.UID).First(&user).RecordNotFound() {
-		return c.JSON(http.StatusNotFound, map[string]string{"message": "User not found."})
-	}
-
 	id := c.Param("id")
 	var asset models.Asset
-	if configs.DB.Where("id = ? and user_id = ?", id, user.ID).First(&asset).RecordNotFound() {
+	isNoRecord := configs.DB.Where("id = ? and user_id = ?", id,
+		configs.DB.Table("users").Select("id").Where("token = ?", token.UID).SubQuery()).
+		Find(&asset).
+		RecordNotFound()
+
+	if isNoRecord {
 		return c.JSON(http.StatusNotFound, map[string]string{"message": "Asset not found."})
 	}
 
