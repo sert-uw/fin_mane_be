@@ -2,7 +2,7 @@ package main
 
 import (
 	"github.com/labstack/echo"
-	"github.com/sert-uw/fin_mane_be/configs"
+	"github.com/sert-uw/fin_mane_be/db"
 	"fmt"
 	"net/http"
 	"os"
@@ -12,7 +12,7 @@ import (
 
 func main() {
 	// DB接続
-	if err := configs.Init(); err != nil {
+	if err := db.Init(); err != nil {
 		fmt.Println(err)
 		return
 	}

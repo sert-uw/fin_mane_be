@@ -1,4 +1,4 @@
-package configs
+package db
 
 import (
 	"github.com/jinzhu/gorm"
@@ -29,4 +29,8 @@ func Init() error {
 	}
 
 	return nil
+}
+
+func UserIdSubQuery(uid string) interface{} {
+	return DB.Table("users").Select("id").Where("token = ?", uid).SubQuery()
 }

@@ -4,7 +4,7 @@ import (
 	"github.com/labstack/echo"
 	"github.com/sert-uw/fin_mane_be/firebase"
 	"net/http"
-	"github.com/sert-uw/fin_mane_be/configs"
+	"github.com/sert-uw/fin_mane_be/db"
 	"github.com/sert-uw/fin_mane_be/models"
 )
 
@@ -17,14 +17,14 @@ func GetUser(c echo.Context) error {
 	}
 
 	var user models.User
-	if configs.DB.Preload("Assets").Where("token = ?", token.UID).First(&user).RecordNotFound() {
+	if db.DB.Preload("Assets").Where("token = ?", token.UID).First(&user).RecordNotFound() {
 		name, err := firebase.GetUserName(token.UID)
 		if err != nil {
 			return c.JSON(http.StatusInternalServerError, map[string]string{"message": "Cannot get user name."})
 		}
 
 		user = models.User{Token: token.UID, Name: name}
-		if err := configs.DB.Preload("Assets").Create(&user).Error; err != nil {
+		if err := db.DB.Preload("Assets").Create(&user).Error; err != nil {
 			return c.JSON(http.StatusInternalServerError, map[string]string{"message": "Cannot insert user."})
 		}
 	}
@@ -41,7 +41,7 @@ func PutUser(c echo.Context) error {
 	}
 
 	var user models.User
-	if configs.DB.Preload("Assets").Where("token = ?", token.UID).First(&user).RecordNotFound() {
+	if db.DB.Preload("Assets").Where("token = ?", token.UID).First(&user).RecordNotFound() {
 		return c.JSON(http.StatusNotFound, map[string]string{"message": "User not found."})
 	}
 
@@ -53,7 +53,7 @@ func PutUser(c echo.Context) error {
 	}
 
 	user.Name = request.Name
-	if err := configs.DB.Save(&user).Error; err != nil {
+	if err := db.DB.Save(&user).Error; err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"message": "Cannot update user."})
 	}
 

@@ -2,7 +2,7 @@ package controllers
 
 import (
 	"github.com/labstack/echo"
-	"github.com/sert-uw/fin_mane_be/configs"
+	"github.com/sert-uw/fin_mane_be/db"
 	"github.com/sert-uw/fin_mane_be/models"
 	"fmt"
 	"net/http"
@@ -11,7 +11,7 @@ import (
 // カテゴリ一覧を返す
 func GetCategories(c echo.Context) error {
 	var categories []models.Category
-	if err := configs.DB.Find(&categories).Error; err != nil {
+	if err := db.DB.Find(&categories).Error; err != nil {
 		fmt.Println(err)
 	}
 	return c.JSON(http.StatusOK, categories)
@@ -25,7 +25,7 @@ func PostCategory(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, map[string]string{"message": "Bad Request."})
 	}
 
-	if err := configs.DB.Create(&category).Error; err != nil {
+	if err := db.DB.Create(&category).Error; err != nil {
 		fmt.Println(err)
 		return c.JSON(http.StatusInternalServerError, map[string]string{"message": "Internal Server Error."})
 	}
@@ -37,7 +37,7 @@ func PostCategory(c echo.Context) error {
 func PutCategory(c echo.Context) error {
 	id := c.Param("id")
 	var category models.Category
-	if configs.DB.Where("id = ?", id).Find(&category).RecordNotFound() {
+	if db.DB.Where("id = ?", id).Find(&category).RecordNotFound() {
 		return c.JSON(http.StatusNotFound, map[string]string{"message": "Not Found."})
 	}
 
@@ -46,7 +46,7 @@ func PutCategory(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, map[string]string{"message": "Bad Request."})
 	}
 
-	if err := configs.DB.Save(&category).Error; err != nil {
+	if err := db.DB.Save(&category).Error; err != nil {
 		fmt.Println(err)
 		return c.JSON(http.StatusInternalServerError, map[string]string{"message": "Internal Server Error."})
 	}
@@ -58,11 +58,11 @@ func PutCategory(c echo.Context) error {
 func DeleteCategory(c echo.Context) error {
 	id := c.Param("id")
 	var category models.Category
-	if configs.DB.Where("id = ?", id).Find(&category).RecordNotFound() {
+	if db.DB.Where("id = ?", id).Find(&category).RecordNotFound() {
 		return c.JSON(http.StatusNotFound, map[string]string{"message": "Not Found."})
 	}
 
-	if err := configs.DB.Delete(&category).Error; err != nil {
+	if err := db.DB.Delete(&category).Error; err != nil {
 		fmt.Println(err)
 		return c.JSON(http.StatusInternalServerError, map[string]string{"message": "Internal Server Error."})
 	}

@@ -5,7 +5,7 @@ import (
 	"github.com/sert-uw/fin_mane_be/firebase"
 	"net/http"
 	"github.com/sert-uw/fin_mane_be/models"
-	"github.com/sert-uw/fin_mane_be/configs"
+	"github.com/sert-uw/fin_mane_be/db"
 )
 
 // Asset一覧を取得
@@ -17,8 +17,7 @@ func GetAssets(c echo.Context) error {
 	}
 
 	var assets []models.Asset
-	err = configs.DB.Where("user_id = ?",
-		configs.DB.Table("users").Select("id").Where("token = ?", token.UID).SubQuery()).
+	err = db.DB.Where("user_id = ?", db.UserIdSubQuery(token.UID)).
 		Find(&assets).
 		Error
 
@@ -38,7 +37,7 @@ func PostAsset(c echo.Context) error {
 	}
 
 	var user models.User
-	if configs.DB.Preload("Assets").Where("token = ?", token.UID).First(&user).RecordNotFound() {
+	if db.DB.Preload("Assets").Where("token = ?", token.UID).First(&user).RecordNotFound() {
 		return c.JSON(http.StatusNotFound, map[string]string{"message": "User not found."})
 	}
 
@@ -52,7 +51,7 @@ func PostAsset(c echo.Context) error {
 
 	asset := models.Asset{Name: request.Name, Balance: request.Balance}
 	user.Assets = append(user.Assets, asset)
-	if err := configs.DB.Save(&user).Error; err != nil {
+	if err := db.DB.Save(&user).Error; err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"message": "Cannot insert asset."})
 	}
 
@@ -69,8 +68,7 @@ func PutAsset(c echo.Context) error {
 
 	id := c.Param("id")
 	var asset models.Asset
-	isNoRecord := configs.DB.Where("id = ? and user_id = ?", id,
-		configs.DB.Table("users").Select("id").Where("token = ?", token.UID).SubQuery()).
+	isNoRecord := db.DB.Where("id = ? and user_id = ?", id, db.UserIdSubQuery(token.UID)).
 		Find(&asset).
 		RecordNotFound()
 
@@ -88,7 +86,7 @@ func PutAsset(c echo.Context) error {
 
 	asset.Name = request.Name
 	asset.Balance = request.Balance
-	if err := configs.DB.Save(&asset).Error; err != nil {
+	if err := db.DB.Save(&asset).Error; err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"message": "Cannot update asset."})
 	}
 
