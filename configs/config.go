@@ -22,6 +22,8 @@ func Init() error {
 		return err
 	}
 
+	DB.LogMode(true)
+
 	if err := DB.AutoMigrate(&models.User{}, &models.Asset{}, &models.Category{}, &models.History{}).Error; err != nil {
 		return err
 	}
