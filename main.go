@@ -43,5 +43,7 @@ func main() {
 	e.POST("/assets", controllers.PostAsset)
 	e.PUT("/assets/:id", controllers.PutAsset)
 
+	e.GET("/assets/:asset_id/histories", controllers.GetHistories)
+
 	e.Logger.Fatal(e.Start(":" + os.Getenv("PORT")))
 }
