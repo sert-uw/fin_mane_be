@@ -1,0 +1,14 @@
+steps:
+
+# DockerImageのビルド
+- name: 'gcr.io/cloud-builders/docker'
+  args: [ 'build', '-t', 'gcr.io/$PROJECT_ID/$REPO_NAME:latest', '.' ]
+  id: 'docker-build'
+
+# GKEへデプロイ
+- name: 'gcr.io/cloud-builders/kubectl'
+  args: ['apply', '-f', 'fin_mane_be.yaml']
+  env:
+    - CLOUDSDK_COMPUTE_ZONE=asia-northeast-1
+    - CLOUDSDK_CONTAINER_CLUSTER=cluster-1
+  waitFor: ['docker-build']
