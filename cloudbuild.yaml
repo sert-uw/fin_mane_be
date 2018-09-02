@@ -2,7 +2,7 @@ steps:
 
 # 依存関係の解決
 - name: 'lushdigital/docker-golang-dep'
-  args: ['ensure']
+  args: ['-w', './', 'ensure']
 
 # アプリケーションのビルド
 - name: 'gcr.io/cloud-builders/go'
