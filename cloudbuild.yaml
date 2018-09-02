@@ -4,12 +4,10 @@ steps:
 - name: 'gcr.io/cloud-builders/go'
   entrypoint: bash
   args:
-    - '-c'
-    - |
-      . /builder/prepare_workspace.inc
-      prepare_workspace || exit
-      go get -u github.com/golang/dep/cmd/dep
-      /go/bin/dep ensure
+  - '-c'
+  - |
+    go get -u github.com/golang/dep/cmd/dep
+    /go/bin/dep ensure
 
 # アプリケーションのビルド
 - name: 'gcr.io/cloud-builders/go'
