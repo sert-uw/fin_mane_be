@@ -2,6 +2,8 @@ steps:
 
 # 依存関係の解決
 - name: 'gcr.io/cloud-builders/go'
+  env:
+    - PROJECT_ROOT=$PROJECT_ID/$REPO_NAME
   entrypoint: ash
   args:
   - '-c'
