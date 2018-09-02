@@ -79,7 +79,7 @@ metadata:
   namespace: fin-mane
 spec:
   rules:
-  - host: fin_mane_be.d-sert.com
+  - host: fin-mane-be.d-sert.com
     http:
       paths:
       - path: /*
