@@ -3,7 +3,7 @@ steps:
 # 依存関係の解決
 - name: 'gcr.io/cloud-builders/go'
   env:
-    - PROJECT_ROOT=$PROJECT_ID/$REPO_NAME
+    - PROJECT_ROOT=$REPO_NAME
   entrypoint: ash
   args:
   - '-c'
@@ -17,7 +17,7 @@ steps:
 # アプリケーションのビルド
 - name: 'gcr.io/cloud-builders/go'
   env:
-    - PROJECT_ROOT=$PROJECT_ID/$REPO_NAME
+    - PROJECT_ROOT=$REPO_NAME
   args: ['build']
 
 # DockerImageのビルド
