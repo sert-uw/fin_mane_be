@@ -2,10 +2,12 @@ steps:
 
 # 依存関係の解決
 - name: 'gcr.io/cloud-builders/go'
-  entrypoint: bash
+  entrypoint: ash
   args:
   - '-c'
   - |
+    . /builder/prepare_workspace.inc
+    prepare_workspace || exit
     go get -u github.com/golang/dep/cmd/dep
     /go/bin/dep ensure
 
