@@ -1,17 +1,17 @@
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: fin_mane_be
+  name: fin-mane-be
   namespace: fin-mane
 spec:
   replicas: 1
   template:
     metadata:
       labels:
-        app: fin_mane_be
+        app: fin-mane-be
     spec:
       containers:
-      - name: fin_mane_be
+      - name: fin-mane-be
         image: gcr.io/fin-mane/fin_mane_be:latest
         resources:
           requests:
@@ -58,14 +58,14 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: fin_mane_be
+  name: fin-mane-be
   namespace: fin-mane
   labels:
-    app: fin_mane_be
+    app: fin-mane-be
 spec:
   type: NodePort
   selector:
-    app: fin_mane_be
+    app: fin-mane-be
   ports:
   - port: 80
     targetPort: 8080
@@ -75,14 +75,14 @@ spec:
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-  name: fin_mane_be
+  name: fin-mane-be
   namespace: fin-mane
 spec:
   rules:
   - host: fin_mane_be.d-sert.com
     http:
       paths:
-      - path: /users/*
+      - path: /*
         backend:
-          serviceName: fin_mane_be
+          serviceName: fin-mane-be
           servicePort: 80
