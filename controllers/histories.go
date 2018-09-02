@@ -47,8 +47,9 @@ func PostHistory(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, map[string]string{"message": "Bad Request."})
 	}
 
+	var asset models.Asset
 	isNoRecord := db.DB.Where("id = ? and user_id = ?", assetId, db.UserIdSubQuery(token.UID)).
-		Find(&models.Asset{}).RecordNotFound()
+		Find(&asset).RecordNotFound()
 	if isNoRecord {
 		return c.JSON(http.StatusNotFound, map[string]string{"message": "Asset Not Found."})
 	}
@@ -59,11 +60,28 @@ func PostHistory(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"message": "Internal Server Error."})
 	}
 
+	tx := db.DB.Begin()
+
 	history.AssetID = uint(assetId)
-	if err := db.DB.Create(&history).Error; err != nil {
+	if err := tx.Create(&history).Preload("Category").First(&history).Error; err != nil {
+		tx.Rollback()
 		fmt.Println(err)
 		return c.JSON(http.StatusInternalServerError, map[string]string{"message": "Internal Server Error."})
 	}
+
+	if history.Category.IsAddition {
+		asset.Balance += history.Amount
+	} else {
+		asset.Balance -= history.Amount
+	}
+
+	if err := tx.Save(&asset).Error; err != nil {
+		tx.Rollback()
+		fmt.Println(err)
+		return c.JSON(http.StatusInternalServerError, map[string]string{"message": "Internal Server Error."})
+	}
+
+	tx.Commit()
 
 	return c.JSON(http.StatusCreated, history)
 }
