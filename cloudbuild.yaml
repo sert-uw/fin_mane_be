@@ -16,7 +16,9 @@ steps:
 
 # アプリケーションのビルド
 - name: 'gcr.io/cloud-builders/go'
-  args: ['build', '$PROJECT_ID/$REPO_NAME']
+  env:
+    - PROJECT_ROOT=$PROJECT_ID/$REPO_NAME
+  args: ['build']
 
 # DockerImageのビルド
 - name: 'gcr.io/cloud-builders/docker'
