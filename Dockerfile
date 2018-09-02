@@ -1,4 +1,4 @@
-FROM alpine
+FROM golang
 
 COPY fin_mane_be /fin_mane_be
 
