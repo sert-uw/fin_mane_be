@@ -18,6 +18,7 @@ func GetAssets(c echo.Context) error {
 
 	var assets []models.Asset
 	err = db.DB.Where("user_id = ?", db.UserIdSubQuery(token.UID)).
+		Preload("Histories").
 		Find(&assets).
 		Error
 
@@ -55,7 +56,7 @@ func PostAsset(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"message": "Cannot insert asset."})
 	}
 
-	return c.JSON(http.StatusOK, asset)
+	return c.JSON(http.StatusOK, user.Assets[len(user.Assets) - 1])
 }
 
 // Assert更新
