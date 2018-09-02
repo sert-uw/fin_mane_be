@@ -1,8 +1,8 @@
 steps:
 
 # 依存関係の解決
-- name: 'lushdigital/docker-golang-dep'
-  args: ['-w', './', 'ensure']
+- name: 'gcr.io/sert-docker/github-sert-uw-go-dep-img'
+  args: ['ensure']
 
 # アプリケーションのビルド
 - name: 'gcr.io/cloud-builders/go'
