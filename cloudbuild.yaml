@@ -11,7 +11,7 @@ steps:
     . /builder/prepare_workspace.inc
     prepare_workspace || exit
     go get -u github.com/golang/dep/cmd/dep
-    /go/bin/dep ensure
+    $gp/bin/dep ensure
 
 # アプリケーションのビルド
 - name: 'gcr.io/cloud-builders/go'
