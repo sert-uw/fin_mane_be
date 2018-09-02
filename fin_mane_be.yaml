@@ -1,0 +1,88 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: fin_mane_be
+  namespace: fin-mane
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: fin_mane_be
+    spec:
+      containers:
+      - name: fin_mane_be
+        image: gcr.io/fin-mane/fin_mane_be:latest
+        resources:
+          requests:
+            cpu: 10m
+        ports:
+        - containerPort: 8080
+        env:
+        - name: DB_USER
+          valueFrom:
+            secretKeyRef:
+              name: cloudsql-db-credentials
+              key: username
+        envFrom:
+        - configMapRef:
+            name: app-env
+
+      - image: gcr.io/cloudsql-docker/gce-proxy:1.09
+        name: cloudsql-proxy
+        resources:
+          requests:
+            cpu: 10m
+        command: ["/cloud_sql_proxy", "--dir=/cloudsql",
+                  "-instances=fin-mane:asia-northeast1:fin-mane=tcp:3306",
+                  "-credential_file=/secrets/cloudsql/credentials.json"]
+        volumeMounts:
+          - name: cloudsql-instance-credentials
+            mountPath: /secrets/cloudsql
+            readOnly: true
+          - name: ssl-certs
+            mountPath: /etc/ssl/certs
+          - name: cloudsql
+            mountPath: /cloudsql
+      volumes:
+        - name: cloudsql-instance-credentials
+          secret:
+            secretName: cloudsql-instance-credentials
+        - name: ssl-certs
+          hostPath:
+            path: /etc/ssl/certs
+        - name: cloudsql
+          emptyDir:
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: fin_mane_be
+  namespace: fin-mane
+  labels:
+    app: fin_mane_be
+spec:
+  type: NodePort
+  selector:
+    app: fin_mane_be
+  ports:
+  - port: 80
+    targetPort: 8080
+    name: http
+
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: fin_mane_be
+  namespace: fin-mane
+spec:
+  rules:
+  - host: fin_mane_be.d-sert.com
+    http:
+      paths:
+      - path: /users/*
+        backend:
+          serviceName: fin_mane_be
+          servicePort: 80
