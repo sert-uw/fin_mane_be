@@ -18,6 +18,7 @@ steps:
 - name: 'gcr.io/cloud-builders/go'
   env:
     - PROJECT_ROOT=fin_mane_be
+    - CGO_ENABLED=0
   args: ['build', '.']
 
 # DockerImageのビルド
