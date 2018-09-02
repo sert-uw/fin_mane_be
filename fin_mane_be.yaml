@@ -12,7 +12,7 @@ spec:
     spec:
       containers:
       - name: fin-mane-be
-        image: gcr.io/fin-mane/fin_mane_be:latest
+        image: gcr.io/fin-mane/github-sert-uw-fin_mane_be:latest
         resources:
           requests:
             cpu: 10m
@@ -24,9 +24,16 @@ spec:
             secretKeyRef:
               name: cloudsql-db-credentials
               key: username
-        envFrom:
-        - configMapRef:
-            name: app-env
+        - name: DB_IP
+          value: '127.0.0.1'
+        - name: DB_PORT
+          value: '3306'
+        - name: CREDENTIALS
+          value: /secrets/firebase/credentials.json
+        volumeMounts:
+        - name: firebase-credentials
+          mountPath: /secrets/firebase
+          readOnly: true
 
       - image: gcr.io/cloudsql-docker/gce-proxy:1.09
         name: cloudsql-proxy
@@ -37,22 +44,26 @@ spec:
                   "-instances=fin-mane:asia-northeast1:fin-mane=tcp:3306",
                   "-credential_file=/secrets/cloudsql/credentials.json"]
         volumeMounts:
-          - name: cloudsql-instance-credentials
-            mountPath: /secrets/cloudsql
-            readOnly: true
-          - name: ssl-certs
-            mountPath: /etc/ssl/certs
-          - name: cloudsql
-            mountPath: /cloudsql
-      volumes:
         - name: cloudsql-instance-credentials
-          secret:
-            secretName: cloudsql-instance-credentials
+          mountPath: /secrets/cloudsql
+          readOnly: true
         - name: ssl-certs
-          hostPath:
-            path: /etc/ssl/certs
+          mountPath: /etc/ssl/certs
         - name: cloudsql
-          emptyDir:
+          mountPath: /cloudsql
+
+      volumes:
+      - name: cloudsql-instance-credentials
+        secret:
+          secretName: cloudsql-instance-credentials
+      - name: ssl-certs
+        hostPath:
+          path: /etc/ssl/certs
+      - name: cloudsql
+        emptyDir:
+      - name: firebase-credentials
+        secret:
+          secretName: firebase-credentials
 
 ---
 apiVersion: v1
