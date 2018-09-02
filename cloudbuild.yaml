@@ -29,7 +29,7 @@ steps:
 - name: 'gcr.io/cloud-builders/kubectl'
   args: ['apply', '-f', 'fin_mane_be.yaml']
   env:
-    - CLOUDSDK_COMPUTE_ZONE=asia-northeast-1
+    - CLOUDSDK_COMPUTE_ZONE=asia-northeast1
     - CLOUDSDK_CONTAINER_CLUSTER=cluster-1
   waitFor: ['docker-build']
 
