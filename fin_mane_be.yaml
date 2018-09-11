@@ -82,6 +82,7 @@ spec:
   ports:
   - port: 80
     targetPort: 8080
+    protocol: TCP
     name: http
 
 ---
@@ -95,7 +96,6 @@ spec:
   - host: fin-mane-be.d-sert.com
     http:
       paths:
-      - path: /*
-        backend:
+      - backend:
           serviceName: fin-mane-be
           servicePort: 80
